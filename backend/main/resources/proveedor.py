@@ -1,39 +1,37 @@
 from flask_restful import Resource
-from flask import request
-
-BOLSONES = {
-    1: {'nombre': 'Fenix'},
-    2: {'nombre': 'Pepe mujica'},
-}
+from flask import request, jsonify
+from .. import db
+from main.models import proveedoresModel
 
 
-class proveedor(Resource):
+class Proveedor(Resource):
     def get(self, id):
-        if int(id) in BOLSONES:
-            return BOLSONES[int(id)]
-        return '', 404
-    
+        proveedor = db.session.query(proveedoresModel).get_or_404(id)
+        return proveedor.to_json()
+
     def delete(self, id):
-        if int(id) in BOLSONES:
-            del BOLSONES[int(id)]
-            return '', 204
-        return '', 404
+        proveedor = db.session.query(proveedoresModel).get_or_404(id)
+        db.session.delete(proveedor)
+        db.session.commit()
+        return '', 204
 
     def put(self, id):
-        if int(id) in BOLSONES:
-            proveedor = BOLSONES[int(id)]
-            data = request.get_json()
-            proveedor.update(data)
-            return proveedor, 201
-        return '', 404
+        proveedor = db.session.query(proveedoresModel).get_or_404(id)
+        data = request.get_json().items()
+        for key, value in data:
+            setattr(proveedor, key, value)
+        db.session.add(proveedor)
+        db.session.commit()
+        return proveedor.to_json() , 201
 
 
-class proveedores(Resource):
+class Proveedores(Resource):
     def get(self):
-        return BOLSONES
+        proveedores = db.session.query(proveedoresModel).all()
+        return jsonify([proveedores.to_json() for proveedores in proveedores])
 
     def post(self):
-        proveedor = request.get_json()
-        id = int(max(BOLSONES.keys())) + 1
-        BOLSONES[id] = proveedor
-        return BOLSONES[id], 201
+        proveedores = proveedoresModel.from_json(request.get_json())
+        db.session.add(proveedores)
+        db.session.commit()
+        return proveedores.to_json(), 201

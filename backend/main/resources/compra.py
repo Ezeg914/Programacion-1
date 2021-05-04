@@ -1,38 +1,36 @@
 from flask_restful import Resource
-from flask import request
-
-BOLSONES = {
-    1: {'nombre': 'Fenix'},
-    2: {'nombre': 'Pepe mujica'},
-}
+from flask import request, jsonify
+from .. import db
+from main.models import compraModel
 
 
-class compra(Resource):
+class Compra(Resource):
     def get(self, id):
-        if int(id) in BOLSONES:
-            return BOLSONES[int(id)]
-        return '', 404
+        compra = db.session.query(compraModel).get_or_404(id)
+        return compra.to_json()
     
     def delete(self, id):
-        if int(id) in BOLSONES:
-            del BOLSONES[int(id)]
-            return '', 204
-        return '', 404
+        compra = db.session.query(compraModel).get_or_404(id)
+        db.session.delete(compra)
+        db.session.commit()
+        return '', 204
 
     def put(self, id):
-        if int(id) in BOLSONES:
-            compra = BOLSONES[int(id)]
-            data = request.get_json()
-            compra.update(data)
-            return compra, 201
-        return '', 404
+        compra = db.session.query(compraModel).get_or_404(id)
+        data = request.get_json().items()
+        for key, value in data:
+            setattr(compra, key, value)
+        db.session.add(compra)
+        db.session.commit()
+        return compra.to_json() , 201
 
-class compras(Resource):
+class Compras(Resource):
     def get(self):
-        return BOLSONES
+        compras = db.session.query(compraModel).all()
+        return jsonify([compra.to_json() for compra in compras])
 
     def post(self):
-        compra = request.get_json()
-        id = int(max(BOLSONES.keys())) + 1
-        BOLSONES[id] = compra
-        return BOLSONES[id], 201
+        compra = compraModel.from_json(request.get_json())
+        db.session.add(compra)
+        db.session.commit()
+        return compra.to_json(), 201

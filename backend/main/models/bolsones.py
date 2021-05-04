@@ -1,10 +1,11 @@
 from .. import db
+from datetime import datetime
 
-class bolsones(db.Model):
+class Bolsones(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     aprobado = db.Column(db.Boolean, nullable=False)
-    fecha = db.Column(db.DateTime, nullable=False)
+    fecha = db.Column(db.DateTime, default=datetime.now())
 
     
     def __repr__(self):
@@ -15,7 +16,7 @@ class bolsones(db.Model):
             'id': self.id,
             'nombre': str(self.nombre),
             'aprobado': (self.aprobado),
-            'fecha': str(self.fecha),
+            'fecha': self.fecha.strftime('%Y-%m-%d'),
 
         }
         return bolsones_json
@@ -26,7 +27,7 @@ class bolsones(db.Model):
         nombre = bolsones_json.get('nombre')
         aprobado = bolsones_json.get('aprobado')
         fecha = bolsones_json.get('fecha')
-        return Professor(id=id,
+        return Bolsones(id=id,
                     nombre=nombre,
                     aprobado=aprobado,
                     fecha=fecha,

@@ -1,38 +1,36 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
+from .. import db
+from main.models import productosModel
 
-BOLSONES = {
-    1: {'nombre': 'Fenix'},
-    2: {'nombre': 'Pepe mujica'},
-}
-
-
-class producto(Resource):
+class Producto(Resource):
     def get(self, id):
-        if int(id) in BOLSONES:
-            return BOLSONES[int(id)]
-        return '', 404
+        producto = db.session.query(productosModel).get_or_404(id)
+        return producto.to_json()
     
     def delete(self, id):
-        if int(id) in BOLSONES:
-            del BOLSONES[int(id)]
-            return '', 204
-        return '', 404
+        producto = db.session.query(productosModel).get_or_404(id)
+        db.session.delete(producto)
+        db.session.commit()
+        return '', 204
+        
 
     def put(self, id):
-        if int(id) in BOLSONES:
-            producto = BOLSONES[int(id)]
-            data = request.get_json()
-            producto.update(data)
-            return producto, 201
-        return '', 404
+        producto = db.session.query(productosModel).get_or_404(id)
+        data = request.get_json().items()
+        for key, value in data:
+            setattr(producto, key, value)
+        db.session.add(producto)
+        db.session.commit()
+        return producto.to_json() , 201
 
-class productos(Resource):
+class Productos(Resource):
     def get(self):
-        return BOLSONES
+        productos = db.session.query(productosModel).all()
+        return jsonify([productos.to_json() for productos in productos])
 
     def post(self):
-        producto = request.get_json()
-        id = int(max(BOLSONES.keys())) + 1
-        BOLSONES[id] = producto
-        return BOLSONES[id], 201
+        productos = productosModel.from_json(request.get_json())
+        db.session.add(productos)
+        db.session.commit()
+        return productos.to_json(), 201

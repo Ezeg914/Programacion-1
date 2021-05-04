@@ -1,38 +1,41 @@
 from flask_restful import Resource
-from flask import request
-
-BOLSONES = {
-    1: {'nombre': 'Fenix'},
-    2: {'nombre': 'Pepe mujica'},
-}
+from flask import request, jsonify
+from .. import db
+from main.models import clientesModel
 
 
-class cliente(Resource):
+
+class Cliente(Resource):
     def get(self, id):
-        if int(id) in BOLSONES:
-            return BOLSONES[int(id)]
-        return '', 404
+        cliente = db.session.query(clientesModel).get_or_404(id)
+        return cliente.to_json()
+
     
     def delete(self, id):
-        if int(id) in BOLSONES:
-            del BOLSONES[int(id)]
-            return '', 204
-        return '', 404
+        cliente = db.session.query(clientesModel).get_or_404(id)
+        db.session.delete(cliente)
+        db.session.commit()
+        return "", 204
+     
         
     def put(self, id):
-        if int(id) in BOLSONES:
-            cliente = BOLSONES[int(id)]
-            data = request.get_json()
-            cliente.update(data)
-            return cliente, 201
-        return '', 404
+        cliente = db.session.query(clientesModel).get_or_404(id)
+        data = request.get_json().items()
+        for key, value in data:
+            setattr(cliente, key, value)
+        db.session.add(cliente)
+        db.session.commit()
+        return cliente.to_json() , 201
 
-class clientes(Resource):
-    def get(self, id):
-        return BOLSONES
+class Clientes(Resource):
+    def get(self):
+        clientes = db.session.query(clientesModel).all()
+        return jsonify([clientes.to_json() for clientes in clientes])
+
 
     def post(self):
-        cliente = request.get_json()
-        id = int(max(BOLSONES.keys())) + 1
-        BOLSONES[id] = cliente
-        return BOLSONES[id], 201
+        clientes = clientesModel.from_json(request.get_json())
+        db.session.add(clientes)
+        db.session.commit()
+        return clientes.to_json(), 201
+        

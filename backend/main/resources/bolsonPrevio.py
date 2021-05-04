@@ -1,18 +1,19 @@
 from flask_restful import Resource
-from flask import request
-
-BOLSONES = {
-    1: {'nombre': 'Fenix'},
-    2: {'nombre': 'Pepe mujica'},
-}
+from flask import request, jsonify
+from .. import db
+from main.models import bolsonesModel
+from datetime import datetime,timedelta
 
 
-class bolsonPrevio(Resource):
+class BolsonPrevio(Resource):
     def get(self, id):
-        if int(id) in BOLSONES:
-            return BOLSONES[int(id)]
-        return '', 404
 
-class bolsonesPrevio(Resource):
+        bolsonPrevio = db.session.query(bolsonesModel).filter(bolsonesModel.fecha <= (datetime.now() - timedelta(days=7))).get_or_404(id)
+        return bolsonPrevio.to_json()
+
+
+class BolsonesPrevio(Resource):
+
     def get(self):
-        return BOLSONES
+        bolsonesPrevio = db.session.query(bolsonesModel).filter(bolsonesModel.fecha <= (datetime.now() - timedelta(days=7))).all()
+        return jsonify([bolsonesPrevio.to_json() for bolsonesPrevio in bolsonesPrevio])

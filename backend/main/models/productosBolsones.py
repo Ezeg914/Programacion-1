@@ -1,6 +1,6 @@
 from .. import db
 
-class productosBolsones(db.Model):
+class ProductosBolsones(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     productoid = db.Column(db.Integer, nullable=False)
     bolsonid = db.Column(db.Integer, nullable=False)
@@ -23,7 +23,7 @@ class productosBolsones(db.Model):
         id = productosBolsones_json.get('id')
         productoid = productosBolsones_json.get('productoid')
         bolsonid = productosBolsones_json.get('bolsonid')
-        return Professor(id=id,
+        return ProductosBolsones(id=id,
                     productoid=productoid,
                     bolsonid=bolsonid,
                     )

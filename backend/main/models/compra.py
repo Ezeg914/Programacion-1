@@ -1,10 +1,11 @@
 from .. import db
+from datetime import datetime
 
-class compra(db.Model):
+class Compra(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     retirado = db.Column(db.Boolean, nullable=False)
-    fechaCompra = db.Column(db.DateTime, nullable=False)
+    fechaCompra = db.Column(db.DateTime, default=datetime.now())
     clienteid = db.Column(db.Integer, nullable=False)
     bolsonid = db.Column(db.Integer, nullable=False)
 
@@ -17,7 +18,7 @@ class compra(db.Model):
             'id': self.id,
             'nombre': str(self.nombre),
             'retirado': (self.retirado),
-            'fechaCompra': str(self.fechaCompra),
+            'fechaCompra': self.fechaCompra.strftime('%Y-%m-%d'),
             'clienteid': self.clienteid,
             'bolsonid': self.bolsonid,
 
@@ -32,7 +33,7 @@ class compra(db.Model):
         fechaCompra = compra_json.get('fechaCompra')
         clienteid = compra_json.get('clienteid')
         bolsonid = compra_json.get('bolsonid')
-        return Professor(id=id,
+        return Compra(id=id,
                     nombre=nombre,
                     retirado=retirado,
                     fechaCompra=fechaCompra,

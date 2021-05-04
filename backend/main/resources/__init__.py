@@ -1,23 +1,23 @@
-from .bolson import bolson as bolsonResource
-from .bolson import bolsones as bolsonesResource
+from .bolson import Bolson as bolsonResource
+from .bolson import Bolsones as bolsonesResource
 
-from .bolsonPendiente import bolsonPendiente as bolsonPendienteResource
-from .bolsonPendiente import bolsonesPendiente as bolsonesPendienteResource
+from .bolsonPendiente import BolsonPendiente as bolsonPendienteResource
+from .bolsonPendiente import BolsonesPendiente as bolsonesPendienteResource
 
-from .bolsonPrevio import bolsonPrevio as bolsonPrevioResource
-from .bolsonPrevio import bolsonesPrevio as bolsonesPrevioResource
+from .bolsonPrevio import BolsonPrevio as bolsonPrevioResource
+from .bolsonPrevio import BolsonesPrevio as bolsonesPrevioResource
 
-from .bolsonVenta import bolsonVenta as bolsonVentaResource
-from .bolsonVenta import bolsonesVenta as bolsonesVentaResource
+from .bolsonVenta import BolsonVenta as bolsonVentaResource
+from .bolsonVenta import BolsonesVenta as bolsonesVentaResource
 
-from .cliente import cliente as clienteResource
-from .cliente import clientes as clientesResource
+from .cliente import Cliente as clienteResource
+from .cliente import Clientes as clientesResource
 
-from .compra import compra  as compraResource
-from .compra import compras as comprasResource
+from .compra import Compra  as compraResource
+from .compra import Compras as comprasResource
 
-from .producto import producto as productoResource
-from .producto import productos as productosResource
+from .producto import Producto as productoResource
+from .producto import Productos as productosResource
 
-from .proveedor import proveedor as proveedorResource
-from .proveedor import proveedores as proveedoresResource
+from .proveedor import Proveedor as proveedorResource
+from .proveedor import Proveedores as proveedoresResource

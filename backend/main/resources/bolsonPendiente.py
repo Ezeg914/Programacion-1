@@ -1,38 +1,36 @@
 from flask_restful import Resource
-from flask import request
-
-BOLSONES = {
-    1: {'nombre': 'Fenix'},
-    2: {'nombre': 'Pepe mujica'},
-}
+from flask import request, jsonify
+from .. import db
+from main.models import bolsonesModel
 
 
-class bolsonPendiente(Resource):
+class BolsonPendiente(Resource):
     def get(self, id):
-        if int(id) in BOLSONES:
-            return BOLSONES[int(id)]
-        return '', 404
+        bolsonPendiente = db.session.query(bolsonesModel).filter(bolsonesModel.aprobado == 0).get_or_404(id)
+        return bolsonPendiente.to_json()
     
     def delete(self, id):
-        if int(id) in BOLSONES:
-            del BOLSONES[int(id)]
-            return '', 204
-        return '', 404
+        bolsonPendiente = db.session.query(bolsonesModel).filter(bolsonesModel.aprobado == 0).get_or_404(id)
+        db.session.delete(bolsonPendiente)
+        db.session.commit()
+        return "", 204
 
     def put(self, id):
-        if int(id) in BOLSONES:
-            bolsonPendiente = BOLSONES[int(id)]
-            data = request.get_json()
-            bolsonPendiente.update(data)
-            return bolsonPendiente, 201
-        return '', 404
+        bolsonPendiente = db.session.query(bolsonesModel).filter(bolsonesModel.aprobado == 0).get_or_404(id)
+        data = request.get_json().items()
+        for key, value in data:
+            setattr(bolsonPendiente, key, value)
+        db.session.add(bolsonPendiente)
+        db.session.commit()
+        return BolsonPendiente.to_json() , 201
 
-class bolsonesPendiente(Resource):
+class BolsonesPendiente(Resource):
     def get(self):
-        return BOLSONES
+        bolsonesPendiente = db.session.query(bolsonesModel).filter(bolsonesModel.aprobado == 0).all()
+        return jsonify([bolsonesPendiente.to_json() for bolsonesPendiente in bolsonesPendiente])
 
     def post(self):
-        bolsonPendiente = request.get_json()
-        id = int(max(BOLSONES.keys())) + 1
-        BOLSONES[id] = bolsonPendiente
-        return BOLSONES[id], 201
+        bolsonesPendiente = bolsonesModel.from_json(request.get_json())
+        db.session.add(bolsonesPendiente)
+        db.session.commit()
+        return bolsonesPendiente.to_json(), 201
