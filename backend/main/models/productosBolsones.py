@@ -3,17 +3,20 @@ from .. import db
 class ProductosBolsones(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     productoid = db.Column(db.Integer, nullable=False)
-    bolsonid = db.Column(db.Integer, nullable=False)
+    bolsonid = db.Column(db.Integer, db.ForeignKey('bolsones.id'), nullable=False)
+    bolson = db.relationship('Bolsones',back_populates="productoBolsones")
+
 
     
     def __repr__(self):
         return '<productosBolsones: %r %r >' % (self.productoid, self.bolsonid)
 
     def to_json(self):
+        self.bolson = db.session.query(bolsonesModel).get_or_404(self.bolsonid)
         productosBolsones_json = {
             'id': self.id,
             'productoid': self.productoid,
-            'bolsonid': self.bolsonid,
+            'bolson': self.bolson.to_json()
 
         }
         return productosBolsones_json

@@ -6,6 +6,8 @@ class Bolsones(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     aprobado = db.Column(db.Boolean, nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.now())
+    compra = db.relationship("Compra", back_populates="bolson",cascade="all, delete-orphan")
+    productoBolsones = db.relationship("ProductosBolsones", back_populates="bolson",cascade="all, delete-orphan")
 
     
     def __repr__(self):
