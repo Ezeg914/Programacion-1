@@ -2,9 +2,10 @@ from .. import db
 
 class ProductosBolsones(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    productoid = db.Column(db.Integer, nullable=False)
     bolsonid = db.Column(db.Integer, db.ForeignKey('bolsones.id'), nullable=False)
     bolson = db.relationship('Bolsones',back_populates="productoBolsones")
+    productoid = db.Column(db.Integer, db.ForeignKey('productos.id'), nullable=False)
+    producto = db.relationship('Productos',back_populates="productoBolsones")
 
 
     
@@ -13,6 +14,7 @@ class ProductosBolsones(db.Model):
 
     def to_json(self):
         self.bolson = db.session.query(bolsonesModel).get_or_404(self.bolsonid)
+        self.producto = db.session.query(productosModel).get_or_404(self.productoid)
         productosBolsones_json = {
             'id': self.id,
             'productoid': self.productoid,
