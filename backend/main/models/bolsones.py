@@ -22,8 +22,8 @@ class Bolsones(db.Model):
 
         }
         return bolsones_json
+    
     @staticmethod
-
     def from_json(bolsones_json):
         id = bolsones_json.get('id')
         nombre = bolsones_json.get('nombre')

@@ -1,4 +1,5 @@
 from .. import db
+from . import usuariosModel
 
 class Productos(db.Model):
     id = db.Column(db.Integer, primary_key=True)

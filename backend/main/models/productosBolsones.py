@@ -1,4 +1,6 @@
 from .. import db
+from .productos import Productos as productosModel
+from . import bolsonesModel
 
 class ProductosBolsones(db.Model):
     id = db.Column(db.Integer, primary_key=True)
