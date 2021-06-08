@@ -1,6 +1,6 @@
 from .. import db
 from datetime import datetime
-from . import clientesModel
+from . import usuariosModel
 from . import bolsonesModel
 
 class Compra(db.Model):
@@ -8,8 +8,8 @@ class Compra(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     retirado = db.Column(db.Boolean, nullable=False)
     fechaCompra = db.Column(db.DateTime, default=datetime.now())
-    clienteid =  db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=False)
-    cliente = db.relationship('Clientes',back_populates="compra")
+    clienteid =  db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    cliente = db.relationship('Usuario',back_populates="compra")
     bolsonid = db.Column(db.Integer, db.ForeignKey('bolsones.id'), nullable=False)
     bolson = db.relationship('Bolsones',back_populates="compra")
 
@@ -18,7 +18,7 @@ class Compra(db.Model):
         return '<compra: %r %r %r  >' % (self.nombre, self.retirado, self.fechaCompra,)
 
     def to_json(self):
-        self.cliente = db.session.query(clientesModel).get_or_404(self.clienteid)
+        self.cliente = db.session.query(usuariosModel).get_or_404(self.clienteid)
         self.bolson = db.session.query(bolsonesModel).get_or_404(self.bolsonid)
         compra_json = {
             'id': self.id,

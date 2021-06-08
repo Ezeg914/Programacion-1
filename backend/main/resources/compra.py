@@ -26,8 +26,22 @@ class Compra(Resource):
 
 class Compras(Resource):
     def get(self):
+        page = 1
+        per_page = 10
         compras = db.session.query(compraModel).all()
-        return jsonify([compra.to_json() for compra in compras])
+        if request.get_json():
+            filters = request.get_json().items()
+            for key, value in filters:
+                if key == 'page':
+                    page = int(value)
+                if key == 'per_page':
+                    per_page = int(value)
+        compras = compras.paginate(page, per_page, True, 30)
+        return jsonify({'compras': [compra.to_json() for compra in compras.items],
+                        'total': compras.total,
+                        'pages': compras.pages,
+                        'page': page
+                        })
 
     def post(self):
         compra = compraModel.from_json(request.get_json())

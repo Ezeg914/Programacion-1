@@ -1,22 +1,22 @@
 from flask_restful import Resource
 from flask import request, jsonify
 from .. import db
-from main.models import proveedoresModel
+from main.models import usuariosModel
 
 
 class Proveedor(Resource):
     def get(self, id):
-        proveedor = db.session.query(proveedoresModel).get_or_404(id)
+        proveedor = db.session.query(usuariosModel).get_or_404(id)
         return proveedor.to_json()
 
     def delete(self, id):
-        proveedor = db.session.query(proveedoresModel).get_or_404(id)
+        proveedor = db.session.query(usuariosModel).get_or_404(id)
         db.session.delete(proveedor)
         db.session.commit()
         return '', 204
 
     def put(self, id):
-        proveedor = db.session.query(proveedoresModel).get_or_404(id)
+        proveedor = db.session.query(usuariosModel).get_or_404(id)
         data = request.get_json().items()
         for key, value in data:
             setattr(proveedor, key, value)
@@ -27,11 +27,11 @@ class Proveedor(Resource):
 
 class Proveedores(Resource):
     def get(self):
-        proveedores = db.session.query(proveedoresModel).all()
+        proveedores = db.session.query(usuariosModel).all()
         return jsonify([proveedores.to_json() for proveedores in proveedores])
 
     def post(self):
-        proveedores = proveedoresModel.from_json(request.get_json())
+        proveedores = usuariosModel.from_json(request.get_json())
         db.session.add(proveedores)
         db.session.commit()
         return proveedores.to_json(), 201

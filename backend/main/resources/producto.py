@@ -26,9 +26,22 @@ class Producto(Resource):
 
 class Productos(Resource):
     def get(self):
+        page = 1
+        per_page = 10
         productos = db.session.query(productosModel).all()
-        return jsonify([productos.to_json() for productos in productos])
-
+        if request.get_json():
+            filters = request.get_json().items()
+            for key, value in filters:
+                if key == 'page':
+                    page = int(value)
+                if key == 'per_page':
+                    per_page = int(value)
+        productos = productos.paginate(page, per_page, True, 30)
+        return jsonify({'productos': [producto.to_json() for producto in productos.items],
+                        'total': productos.total,
+                        'pages': productos.pages,
+                        'page': page
+                        })
     def post(self):
         productos = productosModel.from_json(request.get_json())
         db.session.add(productos)
